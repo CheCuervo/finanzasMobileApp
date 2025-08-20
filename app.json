@@ -2,7 +2,7 @@
   "expo": {
     "name": "FinanzasAppMobile",
     "slug": "FinanzasAppMobile",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "finanzasappmobile",
@@ -16,7 +16,9 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.checuervo.FinanzasAppMobile",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +39,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "afb2cbb3-376a-4316-8ddf-eface1d96c40"
+      }
     }
   }
 }
