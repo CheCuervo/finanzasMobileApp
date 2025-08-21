@@ -573,4 +573,54 @@ export const globalStyles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 14,
   },
+  // --- NUEVOS ESTILOS REUTILIZABLES ---
+  movimientoRow: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 15, 
+    backgroundColor: '#fff', 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#f0f0f0' 
+  },
+  movimientoIcon: { 
+    marginRight: 15 
+  },
+  movimientoDetails: { 
+    flex: 1 
+  },
+  movimientoConcepto: { 
+    fontSize: 16, 
+    fontWeight: '600' 
+  },
+  movimientoFecha: { 
+    fontSize: 12, 
+    color: '#888' 
+  },
+  movimientoValor: { 
+    fontSize: 16, 
+    fontWeight: 'bold' 
+  },
+  infoRowCompact: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  infoItemHalf: {
+    width: '48%',
+  },
+  infoLabelCompact: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  infoValueCompact: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  cardTitleNoBorder: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
 });

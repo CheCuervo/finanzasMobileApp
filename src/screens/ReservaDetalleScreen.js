@@ -19,7 +19,6 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('es-ES', options);
 };
 
-// --- CORRECCIÓN: Se renombra la función ---
 const formatTipoReserva = (tipo) => {
   if (tipo === 'GASTO_FIJO') return 'Gasto Fijo';
   if (tipo === 'GASTO_FIJO_MES') return 'Gasto Fijo Mensual';
@@ -46,10 +45,10 @@ const MovimientoReservaItem = ({ item, onDelete }) => {
   };
   return (
     <Swipeable renderRightActions={renderRightActions}>
-      <View style={styles.movimientoRow}>
-        <View style={styles.movimientoIcon}><Ionicons name={item.tipoMovimiento === 'Reserva' ? 'arrow-up-circle' : 'arrow-down-circle'} size={30} color={item.tipoMovimiento === 'Reserva' ? '#28a745' : '#dc3545'} /></View>
-        <View style={styles.movimientoDetails}><Text style={styles.movimientoConcepto} numberOfLines={1}>{item.concepto}</Text><Text style={styles.movimientoFecha}>{formatDate(item.fecha)}</Text></View>
-        <Text style={[styles.movimientoValor, { color: item.tipoMovimiento === 'Reserva' ? '#28a745' : '#dc3545' }]}>{formatCurrency(item.valor)}</Text>
+      <View style={globalStyles.movimientoRow}>
+        <View style={globalStyles.movimientoIcon}><Ionicons name={item.tipoMovimiento === 'Reserva' ? 'arrow-up-circle' : 'arrow-down-circle'} size={30} color={item.tipoMovimiento === 'Reserva' ? '#28a745' : '#dc3545'} /></View>
+        <View style={globalStyles.movimientoDetails}><Text style={globalStyles.movimientoConcepto} numberOfLines={1}>{item.concepto}</Text><Text style={globalStyles.movimientoFecha}>{formatDate(item.fecha)}</Text></View>
+        <Text style={[globalStyles.movimientoValor, { color: item.tipoMovimiento === 'Reserva' ? '#28a745' : '#dc3545' }]}>{formatCurrency(item.valor)}</Text>
       </View>
     </Swipeable>
   );
@@ -71,6 +70,7 @@ export default function ReservaDetalleScreen({ route, navigation }) {
   const [formData, setFormData] = useState({});
   const [cuentas, setCuentas] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isDetailsExpanded, setIsDetailsExpanded] = useState(true);
 
   const fetchAllData = async (isInitialLoad = false) => {
     if (loadingMore && !isInitialLoad) return;
@@ -211,23 +211,83 @@ export default function ReservaDetalleScreen({ route, navigation }) {
 
   if (loading && page === 0) { return <View style={globalStyles.container}><ActivityIndicator size="large" color="#007bff" /></View>; }
 
+  const cuotaSugeridaColor = reservaInfo.cuotaSugerida > reservaInfo.valorReservaSemanal ? '#dc3545' : '#333';
+  const fechaMetaRealColor = 
+    reservaInfo.fechaMetaReal && 
+    reservaInfo.fechaMeta && 
+    new Date(reservaInfo.fechaMetaReal) > new Date(reservaInfo.fechaMeta) 
+    ? '#dc3545' 
+    : '#333';
+
   return (
     <View style={[globalStyles.container, { justifyContent: 'flex-start' }]}>
-      <View style={globalStyles.cardsRow}>
-        <View style={globalStyles.summaryCardHalf}>
-          <Text style={globalStyles.cardTitleHalf}>Resumen</Text>
-          <View style={globalStyles.infoRowHalf}><Text style={globalStyles.infoLabelHalf}>Tipo:</Text><Text style={[globalStyles.infoValueHalf, { color: getTipoColor(reservaInfo.tipo), fontWeight: 'bold' }]}>{formatTipoReserva(reservaInfo.tipo)}</Text></View>
-          <View style={globalStyles.infoRowHalf}><Text style={globalStyles.infoLabelHalf}>Cuota Semanal:</Text><Text style={globalStyles.infoValueHalf}>{formatCurrency(reservaInfo.valorReservaSemanal)}</Text></View>
-          <View style={globalStyles.infoRowHalf}><Text style={globalStyles.infoLabelHalf}>Reservado:</Text><Text style={globalStyles.infoValueHalf}>{formatCurrency(reservaInfo.valorReservado)}</Text></View>
-        </View>
+      
+      <View style={globalStyles.highlightSection}>
+        <Text style={styles.highlightLabel}>Valor Reservado</Text>
+        <Text style={globalStyles.highlightValue}>{formatCurrency(reservaInfo.valorReservado)}</Text>
+        <Text style={[globalStyles.highlightSubtitle, { color: getTipoColor(reservaInfo.tipo) }]}>
+          {formatTipoReserva(reservaInfo.tipo)}
+        </Text>
+      </View>
 
-        <View style={globalStyles.summaryCardHalf}>
-          <Text style={globalStyles.cardTitleHalf}>Progreso</Text>
-          <View style={globalStyles.infoRowHalf}><Text style={globalStyles.infoLabelHalf}>Meta:</Text><Text style={globalStyles.infoValueHalf}>{formatCurrency(reservaInfo.valorMeta)}</Text></View>
-          <View style={globalStyles.infoRowHalf}><Text style={globalStyles.infoLabelHalf}>Ahorrado:</Text><Text style={[globalStyles.infoValueHalf, { color: '#28a745' }]}>{formatCurrency(reservaInfo.valorAhorrado)}</Text></View>
-          <View style={globalStyles.infoRowHalf}><Text style={globalStyles.infoLabelHalf}>Gastado:</Text><Text style={[globalStyles.infoValueHalf, { color: '#dc3545' }]}>{formatCurrency(reservaInfo.valorGastado)}</Text></View>
-          <View style={globalStyles.infoRowHalf}><Text style={globalStyles.infoLabelHalf}>Faltante:</Text><Text style={globalStyles.infoValueHalf}>{formatCurrency(reservaInfo.valorFaltante)}</Text></View>
-        </View>
+      <View style={globalStyles.summaryCard}>
+        <TouchableOpacity 
+          style={styles.collapsibleHeader} 
+          onPress={() => setIsDetailsExpanded(!isDetailsExpanded)}
+          activeOpacity={0.8}
+        >
+          <Text style={globalStyles.cardTitleNoBorder}>Detalles y Progreso</Text>
+          <Ionicons 
+            name={isDetailsExpanded ? 'chevron-up-outline' : 'chevron-down-outline'} 
+            size={24} 
+            color="#333" 
+          />
+        </TouchableOpacity>
+        
+        {isDetailsExpanded && (
+          <View style={styles.collapsibleContent}>
+            <View style={globalStyles.infoRowCompact}>
+              <View style={globalStyles.infoItemHalf}>
+                <Text style={globalStyles.infoLabelCompact}>Meta:</Text>
+                <Text style={globalStyles.infoValueCompact}>{formatCurrency(reservaInfo.valorMeta)}</Text>
+              </View>
+              <View style={globalStyles.infoItemHalf}>
+                <Text style={globalStyles.infoLabelCompact}>Ahorrado:</Text>
+                <Text style={[globalStyles.infoValueCompact, { color: '#28a745' }]}>{formatCurrency(reservaInfo.valorAhorrado)}</Text>
+              </View>
+            </View>
+            <View style={globalStyles.infoRowCompact}>
+              <View style={globalStyles.infoItemHalf}>
+                <Text style={globalStyles.infoLabelCompact}>Gastado:</Text>
+                <Text style={[globalStyles.infoValueCompact, { color: '#dc3545' }]}>{formatCurrency(reservaInfo.valorGastado)}</Text>
+              </View>
+              <View style={globalStyles.infoItemHalf}>
+                <Text style={globalStyles.infoLabelCompact}>Faltante:</Text>
+                <Text style={globalStyles.infoValueCompact}>{formatCurrency(reservaInfo.valorFaltante)}</Text>
+              </View>
+            </View>
+            <View style={[globalStyles.infoRowCompact, { marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#eee' }]}>
+              <View style={globalStyles.infoItemHalf}>
+                <Text style={globalStyles.infoLabelCompact}>Cuota Semanal:</Text>
+                <Text style={globalStyles.infoValueCompact}>{formatCurrency(reservaInfo.valorReservaSemanal)}</Text>
+              </View>
+              <View style={globalStyles.infoItemHalf}>
+                <Text style={globalStyles.infoLabelCompact}>Cuota Sugerida:</Text>
+                <Text style={[globalStyles.infoValueCompact, { color: cuotaSugeridaColor }]}>{formatCurrency(reservaInfo.cuotaSugerida)}</Text>
+              </View>
+            </View>
+            <View style={globalStyles.infoRowCompact}>
+              <View style={globalStyles.infoItemHalf}>
+                <Text style={globalStyles.infoLabelCompact}>Fecha Meta:</Text>
+                <Text style={globalStyles.infoValueCompact}>{formatDate(reservaInfo.fechaMeta)}</Text>
+              </View>
+              <View style={globalStyles.infoItemHalf}>
+                <Text style={globalStyles.infoLabelCompact}>Fecha Meta Real:</Text>
+                <Text style={[globalStyles.infoValueCompact, { color: fechaMetaRealColor }]}>{formatDate(reservaInfo.fechaMetaReal)}</Text>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
 
       <View style={globalStyles.actionsContainer}>
@@ -325,11 +385,27 @@ export default function ReservaDetalleScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  movimientoRow: { flexDirection: 'row', alignItems: 'center', padding: 15, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  movimientoIcon: { marginRight: 15 },
-  movimientoDetails: { flex: 1 },
-  movimientoConcepto: { fontSize: 16, fontWeight: '600' },
-  movimientoFecha: { fontSize: 12, color: '#888' },
-  movimientoValor: { fontSize: 16, fontWeight: 'bold' },
-  deleteButton: { backgroundColor: '#dc3545', justifyContent: 'center', alignItems: 'center', width: 80 },
+  deleteButton: { 
+    backgroundColor: '#dc3545', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    width: 80 
+  },
+  collapsibleHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  collapsibleContent: {
+    paddingTop: 15,
+  },
+  highlightLabel: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight: '600',
+    marginBottom: 2,
+  },
 });
