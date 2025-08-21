@@ -525,4 +525,52 @@ export const globalStyles = StyleSheet.create({
     width: '100%',
     marginBottom: 20,
   },
+  accountItemTextContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
+  accountItemName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#444',
+  },
+  accountItemType: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 2,
+  },
+  accountItemValueContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  accountItemBalance: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: 5,
+  },
+  detailActionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 20,
+  },
+  detailActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 10,
+    flex: 1, // Para que ocupen el mismo espacio
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  detailActionButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    marginLeft: 8,
+    fontSize: 14,
+  },
 });

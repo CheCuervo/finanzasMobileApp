@@ -26,9 +26,10 @@ const TipoReservaAccordion = ({ title, totalReservado, reservas, isExpanded, onP
   return (
     <View>
       <TouchableOpacity style={globalStyles.accordionSectionHeader} onPress={onPress}>
-        <Text style={globalStyles.accordionSectionTitle}>
-          {title}: <Text style={globalStyles.accordionSectionValue}>{formatCurrency(totalReservado)}</Text>
-        </Text>
+        <View style={globalStyles.accordionTitleContainer}>
+          <Text style={globalStyles.accordionSectionTitle}>{title}</Text>
+          <Text style={globalStyles.accordionSectionSubtitle}>Total Reservado: {formatCurrency(totalReservado)}</Text>
+        </View>
         <Ionicons name={isExpanded ? 'chevron-down-circle-outline' : 'chevron-forward-circle-outline'} size={28} color="#007bff" />
       </TouchableOpacity>
       {isExpanded && (

@@ -2,8 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { navigateToLogin } from '../navigation/NavigationService';
 
-const API_URL = 'http://10.0.0.121:8080';
-// const API_URL = 'https://finanzas-zdt0.onrender.com'; 
+// const API_URL = 'http://10.0.0.121:8080';
+const API_URL = 'https://finanzas-zdt0.onrender.com'; 
 
 // --- API Privada (para endpoints que requieren token) ---
 const api = axios.create({

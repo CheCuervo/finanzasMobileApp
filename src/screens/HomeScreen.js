@@ -34,8 +34,7 @@ export default function HomeScreen({ navigation }) {
       const response = await api.get('/api/finanzas/resumen'); 
       setSummary(response.data); 
     } catch (error) { 
-      const message = error.response?.data?.error || 'No se pudo cargar el resumen.';
-      Alert.alert('Error', message); 
+      Alert.alert('Error', 'No se pudo cargar el resumen.'); 
     } finally { 
       setLoading(false); 
     }
@@ -49,18 +48,10 @@ export default function HomeScreen({ navigation }) {
     const allCuentas = summary?.cuentas || [];
     if (type === 'tc') {
       const filtered = allCuentas.filter(c => c.tipo === 'CREDITO');
-      if (filtered.length === 0) {
-        Alert.alert('Información', 'No tienes cuentas de tipo CRÉDITO para realizar esta operación.');
-        return;
-      }
       setCuentasCredito(filtered);
       setFormData({ valor: '', concepto: '', idCuenta: filtered[0]?.id });
     } else if (type === 'debito') {
       const filtered = allCuentas.filter(c => c.tipo === 'AHORRO' || c.tipo === 'INVERSION');
-       if (filtered.length === 0) {
-        Alert.alert('Información', 'No tienes cuentas de tipo AHORRO o INVERSIÓN para realizar esta operación.');
-        return;
-      }
       setCuentasDebito(filtered);
       setFormData({ valor: '', concepto: '', idCuenta: filtered[0]?.id });
     }
@@ -84,8 +75,7 @@ export default function HomeScreen({ navigation }) {
       setModalVisible({ visible: false });
       Alert.alert('Éxito', 'Movimiento registrado correctamente.');
     } catch (error) {
-      const message = error.response?.data?.error || 'No se pudo registrar el movimiento.';
-      Alert.alert('Error', message);
+      Alert.alert('Error', 'No se pudo registrar el movimiento.');
     } finally {
       setIsSubmitting(false);
     }
@@ -147,12 +137,14 @@ export default function HomeScreen({ navigation }) {
               <Text style={globalStyles.cardTitle}>Resumen de Cuentas</Text>
               {summary.cuentas.map((cuenta) => (
                 <TouchableOpacity key={cuenta.id} style={globalStyles.accordionHeader} onPress={() => navigation.navigate('CuentaDetalle', { cuentaId: cuenta.id, cuentaDescripcion: cuenta.descripcion })}>
-                  <View style={{ flex: 1, marginRight: 10 }}>
-                    <Text style={globalStyles.accordionHeaderText} numberOfLines={1} ellipsizeMode="tail">
-                      {cuenta.descripcion} - <Text style={{ color: getTipoColor(cuenta.tipo), fontWeight: 'bold' }}>{cuenta.tipo}</Text> - {formatCurrency(cuenta.balance)}
-                    </Text>
+                  <View style={globalStyles.accountItemTextContainer}>
+                    <Text style={globalStyles.accountItemName} numberOfLines={1}>{cuenta.descripcion}</Text>
+                    <Text style={[globalStyles.accountItemType, { color: getTipoColor(cuenta.tipo) }]}>{cuenta.tipo}</Text>
                   </View>
-                  <Ionicons name="chevron-forward-outline" size={22} color="#007bff" />
+                  <View style={globalStyles.accountItemValueContainer}>
+                    <Text style={[globalStyles.accountItemBalance, { color: getTipoColor(cuenta.tipo) }]}>{formatCurrency(cuenta.balance)}</Text>
+                    <Ionicons name="chevron-forward-outline" size={22} color="#007bff" />
+                  </View>
                 </TouchableOpacity>
               ))}
             </View>
