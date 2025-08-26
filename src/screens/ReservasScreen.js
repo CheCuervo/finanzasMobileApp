@@ -155,6 +155,35 @@ export default function ReservasScreen({ navigation }) {
     }
   };
 
+  const handleReiniciarMes = () => {
+    Alert.alert(
+      "Confirmar Reinicio de Mes",
+      "Esta acción creará una nueva reserva agrupada con los saldos pendientes por pagar y eliminará todos los movimientos del mes anterior. ¿Desea Continuar?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Continuar",
+          onPress: async () => {
+            setLoading(true);
+            try {
+              await api.post('/api/reservas/reiniciar-mes');
+              Alert.alert('Éxito', 'El mes se ha reiniciado correctamente.');
+              triggerRefresh();
+            } catch (error) {
+              console.error('Error al reiniciar el mes:', error);
+              Alert.alert('Error', 'No se pudo reiniciar el mes.');
+            } finally {
+              setLoading(false);
+            }
+          }
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return <View style={globalStyles.container}><ActivityIndicator size="large" color="#007bff" /></View>;
   }
@@ -189,9 +218,13 @@ export default function ReservasScreen({ navigation }) {
                 <Ionicons name="add-circle-outline" size={22} color="#fff" />
                 <Text style={globalStyles.addButtonText}>Nueva</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[globalStyles.addButton, { flex: 1, backgroundColor: '#28a745' }]} onPress={() => setMasivoModalVisible(true)} activeOpacity={0.8}>
+              <TouchableOpacity style={[globalStyles.addButton, { flex: 1, backgroundColor: '#28a745', marginRight: 10 }]} onPress={() => setMasivoModalVisible(true)} activeOpacity={0.8}>
                 <Ionicons name="trending-up-outline" size={22} color="#fff" />
                 <Text style={globalStyles.addButtonText}>Abono Masivo</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[globalStyles.addButton, { flex: 1, backgroundColor: '#fd7e14'}]} onPress={handleReiniciarMes}>
+                <Ionicons name="refresh-circle-outline" size={24} color="#fff" />
+                <Text style={globalStyles.addButtonText}>Reiniciar Mes</Text>
               </TouchableOpacity>
             </View>
             

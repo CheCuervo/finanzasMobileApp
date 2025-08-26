@@ -206,6 +206,32 @@ export default function ReservaDetalleScreen({ route, navigation }) {
     }}]);
   };
 
+  const handleEliminarReserva = () => {
+    Alert.alert(
+      "Confirmar Eliminación",
+      "¿Está seguro de que desea eliminar esta reserva? Esta acción no se puede deshacer. " +
+      "Tenga en cuenta que el valor ahorrado debe ser igual a 0 para eliminar la reserva.",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Eliminar", onPress: async () => {
+          setLoading(true);
+          try {
+            await api.delete(`/api/reservas/${reservaInfo.id}`);
+            Alert.alert('Éxito', 'Reserva eliminada correctamente.');
+            triggerRefresh();
+            navigation.goBack();
+          } catch (error) {
+            const message = error.response?.data?.error || 'No se pudo eliminar la reserva.';
+            console.error('Error al eliminar reserva:', message);
+            Alert.alert('Error', message);
+          } finally {
+            setLoading(false);
+          }
+        }, style: 'destructive' },
+      ]
+    );
+  };
+
   const renderItem = ({ item }) => (<MovimientoReservaItem item={item} onDelete={() => handleDelete(item.id)} />);
   const renderFooter = () => { if (!loadingMore) return null; return <ActivityIndicator style={{ marginVertical: 20 }} />; };
 
@@ -290,18 +316,25 @@ export default function ReservaDetalleScreen({ route, navigation }) {
         )}
       </View>
 
-      <View style={globalStyles.actionsContainer}>
-        <TouchableOpacity style={[globalStyles.actionButton, { backgroundColor: '#28a745' }]} onPress={() => openModal('abonar')}>
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity style={[styles.actionButton, { backgroundColor: '#28a745' }]} onPress={() => openModal('abonar')}>
           <Ionicons name="trending-up-outline" size={24} color="#fff" />
-          <Text style={globalStyles.actionButtonText}>Abonar</Text>
+          <Text style={styles.actionButtonText}>Abonar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[globalStyles.actionButton, { backgroundColor: '#fd7e14' }]} onPress={() => openModal('retirar')}>
+        <TouchableOpacity style={[styles.actionButton, { backgroundColor: '#fd7e14' }]} onPress={() => openModal('retirar')}>
           <Ionicons name="trending-down-outline" size={24} color="#fff" />
-          <Text style={globalStyles.actionButtonText}>Retirar</Text>
+          <Text style={styles.actionButtonText}>Retirar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[globalStyles.actionButton, { backgroundColor: '#007bff' }]} onPress={() => openModal('editar')}>
+        <TouchableOpacity style={[styles.actionButton, { backgroundColor: '#007bff' }]} onPress={() => openModal('editar')}>
           <Ionicons name="pencil-outline" size={24} color="#fff" />
-          <Text style={globalStyles.actionButtonText}>Editar</Text>
+          <Text style={styles.actionButtonText}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.actionButton, { backgroundColor: '#dc3545' }]} 
+          onPress={handleEliminarReserva}
+        >
+          <Ionicons name="trash-outline" size={20} color="#fff" />
+          <Text style={styles.actionButtonText}>Eliminar</Text>
         </TouchableOpacity>
       </View>
 
@@ -407,5 +440,34 @@ const styles = StyleSheet.create({
     color: '#666',
     fontWeight: '600',
     marginBottom: 2,
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  actionButton: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    marginTop: 5,
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
